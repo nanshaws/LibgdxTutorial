@@ -1,0 +1,279 @@
+
+skin.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+playerGame
+  rotate: false
+  xy: 1, 692
+  size: 960, 1280
+  orig: 960, 1280
+  offset: 0, 0
+  index: -1
+font
+  rotate: false
+  xy: 1, 178
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+wxchat_icon (9) (1)
+  rotate: false
+  xy: 963, 1844
+  size: 472, 128
+  orig: 472, 128
+  offset: 0, 0
+  index: -1
+01
+  rotate: false
+  xy: 515, 562
+  size: 60, 24
+  orig: 60, 24
+  offset: 0, 0
+  index: -1
+02
+  rotate: false
+  xy: 1437, 1910
+  size: 100, 28
+  orig: 100, 28
+  offset: 0, 0
+  index: -1
+03
+  rotate: false
+  xy: 703, 665
+  size: 124, 25
+  orig: 124, 25
+  offset: 0, 0
+  index: -1
+04
+  rotate: false
+  xy: 1576, 1944
+  size: 100, 28
+  orig: 100, 28
+  offset: 0, 0
+  index: -1
+05
+  rotate: false
+  xy: 1678, 1951
+  size: 80, 21
+  orig: 80, 21
+  offset: 0, 0
+  index: -1
+06
+  rotate: false
+  xy: 1160, 1796
+  size: 49, 17
+  orig: 49, 17
+  offset: 0, 0
+  index: -1
+07
+  rotate: false
+  xy: 703, 644
+  size: 72, 19
+  orig: 72, 19
+  offset: 0, 0
+  index: -1
+08
+  rotate: false
+  xy: 1077, 1792
+  size: 81, 21
+  orig: 81, 21
+  offset: 0, 0
+  index: -1
+09
+  rotate: false
+  xy: 1, 96
+  size: 130, 32
+  orig: 130, 32
+  offset: 0, 0
+  index: -1
+10
+  rotate: false
+  xy: 321, 146
+  size: 95, 30
+  orig: 95, 30
+  offset: 0, 0
+  index: -1
+11
+  rotate: false
+  xy: 1, 27
+  size: 79, 30
+  orig: 79, 30
+  offset: 0, 0
+  index: -1
+12
+  rotate: false
+  xy: 1228, 1820
+  size: 81, 22
+  orig: 81, 22
+  offset: 0, 0
+  index: -1
+13
+  rotate: false
+  xy: 1, 1
+  size: 50, 24
+  orig: 50, 24
+  offset: 0, 0
+  index: -1
+14
+  rotate: false
+  xy: 963, 1757
+  size: 93, 30
+  orig: 93, 30
+  offset: 0, 0
+  index: -1
+15
+  rotate: false
+  xy: 133, 103
+  size: 52, 25
+  orig: 52, 25
+  offset: 0, 0
+  index: -1
+16
+  rotate: false
+  xy: 1, 59
+  size: 98, 35
+  orig: 98, 35
+  offset: 0, 0
+  index: -1
+17
+  rotate: false
+  xy: 1437, 1850
+  size: 55, 26
+  orig: 55, 26
+  offset: 0, 0
+  index: -1
+18
+  rotate: false
+  xy: 1117, 1815
+  size: 109, 27
+  orig: 109, 27
+  offset: 0, 0
+  index: -1
+19
+  rotate: false
+  xy: 963, 1815
+  size: 152, 27
+  orig: 152, 27
+  offset: 0, 0
+  index: -1
+20
+  rotate: false
+  xy: 711, 619
+  size: 44, 23
+  orig: 44, 23
+  offset: 0, 0
+  index: -1
+21
+  rotate: false
+  xy: 919, 673
+  size: 36, 17
+  orig: 36, 17
+  offset: 0, 0
+  index: -1
+22
+  rotate: false
+  xy: 1311, 1825
+  size: 49, 17
+  orig: 49, 17
+  offset: 0, 0
+  index: -1
+23
+  rotate: false
+  xy: 1, 130
+  size: 186, 46
+  orig: 186, 46
+  offset: 0, 0
+  index: -1
+24
+  rotate: false
+  xy: 642, 617
+  size: 67, 25
+  orig: 67, 25
+  offset: 0, 0
+  index: -1
+25
+  rotate: false
+  xy: 963, 1789
+  size: 112, 24
+  orig: 112, 24
+  offset: 0, 0
+  index: -1
+26
+  rotate: false
+  xy: 515, 588
+  size: 94, 22
+  orig: 94, 22
+  offset: 0, 0
+  index: -1
+27
+  rotate: false
+  xy: 963, 1730
+  size: 57, 25
+  orig: 57, 25
+  offset: 0, 0
+  index: -1
+28
+  rotate: false
+  xy: 515, 644
+  size: 186, 46
+  orig: 186, 46
+  offset: 0, 0
+  index: -1
+29
+  rotate: false
+  xy: 1437, 1878
+  size: 93, 30
+  orig: 93, 30
+  offset: 0, 0
+  index: -1
+30
+  rotate: false
+  xy: 418, 150
+  size: 66, 26
+  orig: 66, 26
+  offset: 0, 0
+  index: -1
+31
+  rotate: false
+  xy: 1760, 1955
+  size: 49, 17
+  orig: 49, 17
+  offset: 0, 0
+  index: -1
+32
+  rotate: false
+  xy: 189, 144
+  size: 130, 32
+  orig: 130, 32
+  offset: 0, 0
+  index: -1
+33
+  rotate: false
+  xy: 1437, 1940
+  size: 137, 32
+  orig: 137, 32
+  offset: 0, 0
+  index: -1
+34
+  rotate: false
+  xy: 515, 612
+  size: 125, 30
+  orig: 125, 30
+  offset: 0, 0
+  index: -1
+35
+  rotate: false
+  xy: 777, 646
+  size: 49, 17
+  orig: 49, 17
+  offset: 0, 0
+  index: -1
+36
+  rotate: false
+  xy: 829, 667
+  size: 88, 23
+  orig: 88, 23
+  offset: 0, 0
+  index: -1
