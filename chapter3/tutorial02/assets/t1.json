@@ -1,0 +1,131 @@
+{
+"children": [
+	{
+		"class": "Table",
+		"cells": [
+			{
+				"child": {
+					"class": "Stack",
+					"name": null,
+					"children": [
+						{
+							"class": "Image",
+							"name": null,
+							"drawable": "t1",
+							"scaling": "stretch",
+							"touchable": "enabled",
+							"visible": true
+						},
+						{
+							"class": "Table",
+							"cells": [
+								{
+									"child": {
+										"class": "Button",
+										"name": null,
+										"style": {
+											"clazz": "com.badlogic.gdx.scenes.scene2d.ui.Button",
+											"name": "default"
+										},
+										"checked": false,
+										"disabled": false,
+										"color": null,
+										"padLeft": 0,
+										"padRight": 0,
+										"padTop": 0,
+										"padBottom": 0,
+										"touchable": "enabled",
+										"visible": true
+									},
+									"row": 0,
+									"column": 0,
+									"padLeft": 0,
+									"padRight": 0,
+									"padTop": 0,
+									"padBottom": 0,
+									"spaceLeft": 0,
+									"spaceRight": 0,
+									"spaceTop": 0,
+									"spaceBottom": 0,
+									"expandX": false,
+									"expandY": false,
+									"fillX": false,
+									"fillY": false,
+									"growX": false,
+									"growY": false,
+									"alignment": 1,
+									"minWidth": -1,
+									"minHeight": -1,
+									"maxWidth": -1,
+									"maxHeight": -1,
+									"preferredWidth": -1,
+									"preferredHeight": -1,
+									"uniformX": false,
+									"uniformY": false,
+									"colSpan": 1
+								}
+							],
+							"name": null,
+							"background": null,
+							"color": null,
+							"padLeft": 0,
+							"padRight": 0,
+							"padTop": 0,
+							"padBottom": 0,
+							"paddingEnabled": false,
+							"alignment": 1,
+							"fillParent": false,
+							"touchable": "childrenOnly",
+							"visible": true
+						}
+					],
+					"touchable": "enabled",
+					"visible": true
+				},
+				"row": 0,
+				"column": 0,
+				"padLeft": 0,
+				"padRight": 0,
+				"padTop": 0,
+				"padBottom": 0,
+				"spaceLeft": 0,
+				"spaceRight": 0,
+				"spaceTop": 0,
+				"spaceBottom": 0,
+				"expandX": false,
+				"expandY": false,
+				"fillX": false,
+				"fillY": false,
+				"growX": false,
+				"growY": false,
+				"alignment": 1,
+				"minWidth": -1,
+				"minHeight": -1,
+				"maxWidth": -1,
+				"maxHeight": -1,
+				"preferredWidth": -1,
+				"preferredHeight": -1,
+				"uniformX": false,
+				"uniformY": false,
+				"colSpan": 1
+			}
+		],
+		"name": null,
+		"background": null,
+		"color": null,
+		"padLeft": 0,
+		"padRight": 0,
+		"padTop": 0,
+		"padBottom": 0,
+		"paddingEnabled": false,
+		"alignment": 1,
+		"fillParent": true,
+		"touchable": "childrenOnly",
+		"visible": true
+	}
+],
+"backgroundColor": null,
+"skinPath": "skin.json",
+"packageString": "com.mygdx.game",
+"classString": "Core"
+}
