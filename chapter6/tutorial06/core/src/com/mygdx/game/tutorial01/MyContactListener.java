@@ -5,7 +5,6 @@ import com.badlogic.gdx.physics.box2d.*;
 public class MyContactListener implements ContactListener {
     @Override
     public void beginContact(Contact contact) {
-        System.out.println("helloworld");
 
     }
 
