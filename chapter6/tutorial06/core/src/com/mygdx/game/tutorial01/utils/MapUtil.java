@@ -17,8 +17,8 @@ import com.badlogic.gdx.utils.Array;
 public class MapUtil extends Sprite {
     TiledMap load;
     Color bgcolor;
-    public float playx;
-    public float playy;
+    public static float playx;
+    public static float playy;
 
     public TiledMap getTmxMapLoader(){
         load = new TmxMapLoader().load("map/mariomap/map05.tmx");

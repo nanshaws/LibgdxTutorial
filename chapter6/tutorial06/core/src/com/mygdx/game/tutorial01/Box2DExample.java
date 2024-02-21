@@ -42,8 +42,6 @@ public class Box2DExample extends ApplicationAdapter {
         ground.createFixture(groundShape, 0);
         groundShape.dispose();
 
-        // 创建箱子
-        box=new Box(world,1,1);
 
         TiledMap map=new TiledMap();
         MapUtil mapUtil=new MapUtil();
@@ -52,6 +50,11 @@ public class Box2DExample extends ApplicationAdapter {
         FixtureDef fixtureDef=new FixtureDef();
         BodyDef bodyDef=new BodyDef();
         mapUtil.createStatic(map,world,fixtureDef,bodyDef);
+
+        // 创建箱子
+        box=new Box(world,1,1);
+
+
     }
 
     @Override

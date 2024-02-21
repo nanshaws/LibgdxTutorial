@@ -1,6 +1,7 @@
 package com.mygdx.game.tutorial01;
 
 import com.badlogic.gdx.physics.box2d.*;
+import com.mygdx.game.tutorial01.input.BoxInput;
 
 public class MyContactListener implements ContactListener {
     @Override

@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.tutorial01.input.BoxInput;
+import com.mygdx.game.tutorial01.utils.MapUtil;
 
 import static com.mygdx.game.tutorial01.constant.Constant.PPM;
 
@@ -12,7 +14,7 @@ public class Box extends Sprite {
     public float height;
     public boolean isWalking;
     public boolean isRunning;
-    public boolean isGround;
+    public boolean isGround=true;
     public SpriteBatch batch;
     public TextureRegion img;
     private TextureAtlas textureAtlas;
@@ -69,7 +71,7 @@ public class Box extends Sprite {
         this.width=width;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(0,100/PPM);
+        bodyDef.position.set(MapUtil.playx,MapUtil.playy);
 
         box = world.createBody(bodyDef);
 
@@ -121,6 +123,18 @@ public class Box extends Sprite {
         elapsedTime += Gdx.graphics.getDeltaTime();
         batch.begin();
         batch.draw(runL.getKeyFrame(elapsedTime, true),  (box.getPosition().x+Gdx.graphics.getWidth())/2-30,(box.getPosition().y/2+Gdx.graphics.getHeight())/2-40,60,60);
+        batch.end();
+    }
+    public void jump(){
+        elapsedTime += Gdx.graphics.getDeltaTime();
+        batch.begin();
+        if (BoxInput.islefting)
+            batch.draw(runL.getKeyFrame(elapsedTime, true),  (box.getPosition().x+Gdx.graphics.getWidth())/2-30,(box.getPosition().y/2+Gdx.graphics.getHeight())/2-40,60,60);
+        if (BoxInput.isrighting)
+            batch.draw(runR.getKeyFrame(elapsedTime, true),  (box.getPosition().x+Gdx.graphics.getWidth())/2-30,(box.getPosition().y/2+Gdx.graphics.getHeight())/2-40,60,60);
+        else {
+            batch.draw(stand.getKeyFrame(elapsedTime, true),  (box.getPosition().x+Gdx.graphics.getWidth())/2-30,(box.getPosition().y/2+Gdx.graphics.getHeight())/2-40,60,60);
+        }
         batch.end();
     }
 }
