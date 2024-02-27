@@ -21,10 +21,11 @@ public class Box extends Sprite {
     public Animation<TextureAtlas.AtlasRegion> runL;
     private Animation<TextureAtlas.AtlasRegion> runR;
     private Animation<TextureAtlas.AtlasRegion> stand;
+    private Animation<TextureAtlas.AtlasRegion> attack;
     public Body box;
     private float elapsedTime;
     private float speedfps=0.15f;
-
+    private float attackfps=0.0000005f;
     public boolean isWalking() {
         return isWalking;
     }
@@ -106,6 +107,10 @@ public class Box extends Sprite {
         textureAtlas = new TextureAtlas(Gdx.files.internal("human/tian/stand/tianstand.atlas"));
         Array<TextureAtlas.AtlasRegion> Standframes = textureAtlas.getRegions();
         stand = new Animation<>(speedfps, Standframes);
+
+        textureAtlas=new TextureAtlas(Gdx.files.internal("human/tian/attack/tianattack.atlas"));
+        Array<TextureAtlas.AtlasRegion> attackframes = textureAtlas.getRegions();
+        attack=new Animation<>(attackfps,attackframes);
     }
     public void runR(){
         elapsedTime += Gdx.graphics.getDeltaTime();
@@ -135,6 +140,13 @@ public class Box extends Sprite {
         else {
             batch.draw(stand.getKeyFrame(elapsedTime, true),  (box.getPosition().x+Gdx.graphics.getWidth())/2-30,(box.getPosition().y/2+Gdx.graphics.getHeight())/2-40,60,60);
         }
+        batch.end();
+    }
+
+    public void attack(){
+        elapsedTime += Gdx.graphics.getDeltaTime();
+        batch.begin();
+        batch.draw(attack.getKeyFrame(elapsedTime, true),  (box.getPosition().x+Gdx.graphics.getWidth())/2-30,(box.getPosition().y/2+Gdx.graphics.getHeight())/2-40,60,60);
         batch.end();
     }
 }

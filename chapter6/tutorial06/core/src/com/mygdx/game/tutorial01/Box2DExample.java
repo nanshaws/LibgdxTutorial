@@ -3,12 +3,14 @@ package com.mygdx.game.tutorial01;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.mygdx.game.tutorial01.constant.Constant;
 import com.mygdx.game.tutorial01.input.BoxInput;
 import com.mygdx.game.tutorial01.pojo.Box;
 import com.mygdx.game.tutorial01.utils.MapUtil;
@@ -46,14 +48,16 @@ public class Box2DExample extends ApplicationAdapter {
         TiledMap map=new TiledMap();
         MapUtil mapUtil=new MapUtil();
         map=mapUtil.getTmxMapLoader();
-        ren=new OrthogonalTiledMapRenderer(map);
+        ren=new OrthogonalTiledMapRenderer(map,1.006f);
         FixtureDef fixtureDef=new FixtureDef();
         BodyDef bodyDef=new BodyDef();
         mapUtil.createStatic(map,world,fixtureDef,bodyDef);
 
         // 创建箱子
         box=new Box(world,1,1);
-
+        Music music = Gdx.audio.newMusic(Gdx.files.internal("data/Tanir & TyomcHa-Da Da Da(Remix by Mikis).mp3"));
+        music.play();
+        music.setLooping(true);
 
     }
 
@@ -72,7 +76,8 @@ public class Box2DExample extends ApplicationAdapter {
         debugRenderer.render(world, camera.combined);
         debugRenderer.setDrawBodies(false);
         // 检查用户输入并更新箱子位置
-        BoxInput.handleInput(box.box,box);
+        BoxInput.handleKeyInput(box.box,box);
+        BoxInput.handleMouseInput(box.box,box);
         world.step(1 / 60f, 6, 2);
     }
 

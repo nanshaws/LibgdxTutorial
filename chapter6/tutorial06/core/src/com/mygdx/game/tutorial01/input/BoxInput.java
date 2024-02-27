@@ -12,7 +12,7 @@ public class BoxInput {
     public static int jumpCount = 0; // 添加跳跃次数变量
     public static boolean canJump = true; // 添加是否可以跳跃的变量
 
-    public static void handleInput(Body box, Box human){
+    public static void handleKeyInput(Body box, Box human){
         if (Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.W)) {
             if (canJump) { // 添加是否可以跳跃的判断
                 if (Math.abs(box.getLinearVelocity().y) < 0.01) { // 检查是否在空中
@@ -23,6 +23,8 @@ public class BoxInput {
                         canJump = false; // 跳跃次数达到2次时，禁止跳跃
                     }
                 }
+            }else {
+                human.stand();
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.D) && Gdx.input.isKeyPressed(Input.Keys.W)) {
             if (canJump) { // 添加是否可以跳跃的判断
@@ -34,6 +36,8 @@ public class BoxInput {
                         canJump = false; // 跳跃次数达到2次时，禁止跳跃
                     }
                 }
+            }else {
+                human.stand();
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             human.runL();
@@ -55,6 +59,8 @@ public class BoxInput {
                         canJump = false; // 跳跃次数达到2次时，禁止跳跃
                     }
                 }
+            }else {
+                human.stand();
             }
         } else {
             human.stand();
@@ -66,6 +72,12 @@ public class BoxInput {
             // 人物落地后清零跳跃次数，并允许下一次跳跃
             jumpCount = 0;
             canJump = true;
+        }
+    }
+
+    public static void handleMouseInput(Body box, Box human){
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+           human.attack();
         }
     }
 

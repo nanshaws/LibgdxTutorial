@@ -3,89 +3,141 @@
 在libGDX中，可以使用HttpRequest类来发送HTTP请求。以下是一个简单的示例：
 
 ```
+package com.mygdx.game.http;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
-import com.badlogic.gdx.net.HttpRequest;
-import com.badlogic.gdx.net.HttpResponse;
+import com.badlogic.gdx.net.HttpRequestBuilder;
 import com.badlogic.gdx.net.HttpStatus;
 
 public class HttpExample {
-    public static void main(String[] args) {
-        HttpRequest httpRequest = new HttpRequest("http://www.baidu.com");
-        HttpResponse httpResponse = httpRequest.send();
+    public static void send() {
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder();
+        Net.HttpRequest httpRequest = requestBuilder.newRequest().method(Net.HttpMethods.GET).url("https://www.google.de").content("q=libgdx&example=example").build();
+        Gdx.net.sendHttpRequest(httpRequest, httpResponseListener);
+        //有参数的
+//        HttpRequestBuilder requestBuilder = new HttpRequestBuilder();
+//        HttpRequest httpRequest = requestBuilder.newRequest().method(HttpMethods.GET).url("https://www.google.de").content("q=libgdx&example=example").build();
+//        Gdx.net.sendHttpRequest(httpRequest, httpResponseListener);
 
-        if (httpResponse.getStatus().getStatusCode() == HttpStatus.SC_OK) {
-            System.out.println("请求成功，响应内容：" + httpResponse.getResultAsString());
-        } else {
-            System.out.println("请求失败，状态码：" + httpResponse.getStatus().getStatusCode());
-        }
     }
+
+    private static final Net.HttpResponseListener httpResponseListener = new Net.HttpResponseListener() {
+        @Override
+        public void handleHttpResponse(Net.HttpResponse httpResponse) {
+            if (httpResponse.getStatus().getStatusCode() == HttpStatus.SC_OK) {
+                System.out.println("请求成功，响应内容：" + httpResponse.getResultAsString());
+            } else {
+                System.out.println("请求失败，状态码：" + httpResponse.getStatus().getStatusCode());
+            }
+        }
+
+        @Override
+        public void failed(Throwable throwable) {
+            System.out.println("失败");
+        }
+
+        @Override
+        public void cancelled() {
+            System.out.println("取消");
+        }
+    };
+
 }
 ```
 
-## 7.2 WebSocket通信
-
-在libGDX中，可以使用WebSocket类进行WebSocket通信。以下是一个简单的示例：
+## TCP通信，客户端
 
 ```
-import com.badlogic.gdx.Net;
-import com.badlogic.gdx.net.WebSocket;
-import com.badlogic.gdx.net.WebSocketListener;
+package com.mygdx.game.tcp;
 
-public class WebSocketExample {
-    public static void main(String[] args) {
-        WebSocket webSocket = new WebSocket("ws://example.com", new MyWebSocketListener());
-        webSocket.connect();
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Net;
+import com.badlogic.gdx.net.Socket;
+import com.badlogic.gdx.net.SocketHints;
+
+import java.io.OutputStream;
+
+public class Client extends Thread{
+    @Override
+    public void run() {
+        receivedTCP();
     }
 
-    static class MyWebSocketListener implements WebSocketListener {
-        @Override
-        public void onConnected() {
-            System.out.println("连接成功");
-        }
+    public  void receivedTCP() {
+        // 创建客户端套接字
+        Socket socket = Gdx.net.newClientSocket(Net.Protocol.TCP, "localhost", 8080, null);
 
-        @Override
-        public void onMessageReceived(String message) {
-            System.out.println("收到消息：" + message);
-        }
+        try {
+            // 获取输出流
+            OutputStream outputStream = socket.getOutputStream();
 
-        @Override
-        public void onDisconnected() {
-            System.out.println("连接断开");
+            // 发送数据到服务器
+            outputStream.write("Hello, server!".getBytes());
+            outputStream.flush();
+            // 读取服务器响应
+            byte[] data = new byte[1024];
+            int length = socket.getInputStream().read(data);
+            String message = new String(data, 0, length);
+            System.out.println("Received from server: " + message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭客户端套接字
+            socket.dispose();
         }
     }
 }
-    
-```
-
-## 7.3 UDP通信，完整代码
-
-在libGDX中，可以使用GdxUdpConnection类进行UDP通信。以下是一个简单的示例：
 
 ```
+
+## TCP通信，服务端
+
+```
+package com.mygdx.game.tcp;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
-import com.badlogic.gdx.net.GdxUdpConnection;
-import com.badlogic.gdx.net.GdxUdpPacket;
-import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.net.ServerSocket;
+import com.badlogic.gdx.net.Socket;
+import com.badlogic.gdx.net.SocketHints;
 
-public class UdpExample {
-    public static void main(String[] args) {
-        GdxUdpConnection udpConnection = new GdxUdpConnection();
-        udpConnection.start(5000); // 监听端口5000
+import java.io.OutputStream;
 
-        // 发送数据
-        byte[] data = "Hello, UDP!".getBytes();
-        GdxUdpPacket packet = new GdxUdpPacket(data, "localhost", 5001); // 目标地址和端口
-        udpConnection.send(packet);
+public class Server extends Thread {
+    @Override
+    public void run() {
+        openTcp();
+    }
 
-        // 接收数据
-        GdxUdpPacket receivedPacket = udpConnection.nextPacket();
-        if (receivedPacket != null) {
-            byte[] receivedData = receivedPacket.data;
-            String receivedMessage = new String(receivedData);
-            System.out.println("收到消息：" + receivedMessage);
+    public  void openTcp() {
+        // 创建服务端套接字
+        ServerSocket serverSocket = Gdx.net.newServerSocket(Net.Protocol.TCP, 8080, null);
+
+        while (true) {
+            // 等待客户端连接
+            Socket socket = serverSocket.accept(null);
+
+            try {
+                // 获取输出流
+                OutputStream outputStream = socket.getOutputStream();
+
+                // 读取客户端发送的数据
+                byte[] data = new byte[1024];
+                int length = socket.getInputStream().read(data);
+                String message = new String(data, 0, length);
+                System.out.println("Received from client: " + message);
+
+                // 向客户端发送响应
+                outputStream.write("Hello, client!".getBytes());
+                outputStream.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                // 关闭客户端套接字
+                socket.dispose();
+            }
         }
-
-        udpConnection.stop(); // 停止UDP连接
     }
 }
 
