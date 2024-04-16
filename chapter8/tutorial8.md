@@ -1,5 +1,72 @@
 ## 8.1 路径查找
 
+​        在Libgdx中，您可以使用FileHandle类来查找和管理文件和目录。下面是一个如何使用FileHandle类在Libgdx项目的assets目录中查找文件的示例:
+
+```
+public class Game extends ApplicationAdapter {
+    @Override
+    public void create() {
+        FileHandle file = Gdx.files.internal("data/example.txt");
+        if (file.exists()) {
+            String content = file.readString();
+            System.out.println("File content: " + content);
+        } else {
+            System.out.println("File not found");
+        }
+    }
+}
+```
+
+​        在这个例子中，Gdx.files.internal方法用于获取资产文件夹“data”目录下名为“example.txt”的文件的FileHandle。然后调用exists方法来检查文件是否存在，并调用readString方法来读取文件的内容。
+
+如果需要查找目录，可以使用list方法获得目录中文件和目录的列表。这里有一个例子:
+
+```
+public class Game extends ApplicationAdapter {
+    @Override
+    public void create() {
+        FileHandle dir = Gdx.files.internal("data");
+
+        if (dir.isDirectory()) {
+            FileHandle[] files = dir.list();
+
+            for (FileHandle file : files) {
+                System.out.println("File: " + file.name());
+            }
+        } else {
+            System.out.println("Not a directory");
+        }
+    }
+}
+```
+
+在本例中，使用Gdx.files.internal方法获取“data”目录的FileHandle。然后调用isDirectory方法来检查该目录是否存在，并调用list方法来获取该目录中的文件和目录的列表。调用name方法来获取每个文件的名称。
+
+​        需要注意的是，FileHandle类提供了几种管理文件和目录的方法，包括复制、移动、删除和mkdirs。您可以使用这些方法执行各种文件操作，例如复制文件、移动文件、删除文件或创建目录。
+
+下面是一个如何使用FileHandle类复制文件的例子:
+
+```
+public class Game extends ApplicationAdapter {
+    @Override
+    public void create() {
+        FileHandle srcFile = Gdx.files.internal("data/example.txt");
+        FileHandle destFile = Gdx.files.internal("data/example_copy.txt");
+
+        if (srcFile.exists()) {
+            srcFile.copyTo(destFile);
+            System.out.println("File copied");
+        } else {
+            System.out.println("Source file not found");
+        }
+    }
+}
+```
+
+​        在本例中，FileHandle类用于获取源文件和目标文件的FileHandle。调用exists方法检查源文件是否存在，调用copyTo方法将源文件复制到目标文件。println方法用于打印一条消息，表明文件是否复制成功。
+
+
+
 在libGDX中，可以使用AStar类进行路径查找。以下是一个简单的示例：
 
 ```
