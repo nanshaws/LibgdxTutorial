@@ -8,6 +8,7 @@
 
   - 1.1 Java环境安装
   - 1.2 libgdx安装
+  - 1.3 理解libgdx的stage和actor的关系（核心重点）
 
 - 1. 基础入门
 
