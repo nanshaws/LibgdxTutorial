@@ -100,107 +100,303 @@ public class PathfindingExample {
 }   
 ```
 
-## 8.2 AI行为树
+## 8.2 AI行为树（代码在mybtree包下）
 
-在libGDX中，可以使用BehaviorTree类进行AI行为树的构建和执行。以下是一个简单的示例：
+准备工作
+
+确保你已经将 gdx-ai 库添加到你的项目中。如果使用 Maven，可以在 `pom.xml` 中添加如下依赖：
+
+```
+ <dependency>
+    <groupId>com.badlogicgames.gdx</groupId>
+    <artifactId>gdx-ai</artifactId>
+    <version>1.8.2</version>
+</dependency>
+```
+
+示例代码
+
+下面是完整的示例代码：
 
 ```
 import com.badlogic.gdx.ai.btree.BehaviorTree;
-import com.badlogic.gdx.ai.btree.Decorator;
+import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import com.badlogic.gdx.ai.btree.decorator.Invert;
-import com.badlogic.gdx.ai.btree.decorator.Succeeder;
-import com.badlogic.gdx.ai.btree.task.Condition;
-import com.badlogic.gdx.ai.btree.task.Selector;
-import com.badlogic.gdx.ai.btree.task.Sequence;
+import com.badlogic.gdx.ai.btree.branch.Sequence;
+import com.badlogic.gdx.ai.btree.decorator.Repeat;
+import com.badlogic.gdx.ai.btree.leaf.Success;
+import com.badlogic.gdx.ai.utils.random.ConstantIntegerDistribution;
 
+// 定义角色类
+class Character {
+    public void sayHello() {
+        System.out.println(“Hello! I am a character in this game.”);
+    }
+}
+
+// 自定义任务实现
+class PrintHelloTask extends LeafTask<Character> {
+    @Override
+    public Status execute() {
+        Character character = getObject();
+        character.sayHello();
+        return Status.SUCCEEDED;
+    }
+
+    @Override
+    protected Task<Character> copyTo(Task<Character> task) {
+        return task;
+    }
+}
+
+// 主类
 public class BehaviorTreeExample {
     public static void main(String[] args) {
-        // 创建行为树节点
-        Condition isHealthy = new IsHealthy();
-        Condition isHungry = new IsHungry();
-        Task eat = new Eat();
-        Task drink = new Drink();
+        Character character = new Character();
+        BehaviorTree<Character> behaviorTree = new BehaviorTree<>(createBehaviorTreeStructure(), character);
 
-        // 构建行为树
-        Sequence sequence = new Sequence();
-        sequence.addChild(isHealthy);
-        sequence.addChild(isHungry);
-
-        Decorator invert = new Invert();
-        invert.addChild(isHealthy);
-
-        Selector selector = new Selector();
-        selector.addChild(sequence);
-        selector.addChild(invert);
-        selector.addChild(eat);
-        selector.addChild(drink);
-
-        BehaviorTree<Void> behaviorTree = new BehaviorTree<>(selector);
-
-        // 执行行为树
-        while (!behaviorTree.isFinished()) {
+        for (int i = 0; i < 10; i++) {
             behaviorTree.step();
         }
     }
-}    
+
+    private static Task<Character> createBehaviorTreeStructure() {
+        Sequence<Character> rootSequence = new Sequence<>();
+        // 使用 ConstantIntegerDistribution 来指定重复次数
+        rootSequence.addChild(new Repeat<>(new ConstantIntegerDistribution(1), new PrintHelloTask()));
+        rootSequence.addChild(new Success<Character>());
+        return rootSequence;
+    }
+}
 ```
 
-## 8.3 状态机，完整代码
+代码详解
 
-在libGDX中，可以使用StateMachine类进行状态机的构建和执行。以下是一个简单的示例：
+1. 定义角色类
+
+`Character` 类是我们模拟的游戏角色，拥有一个简单的方法 `sayHello`，用于输出打招呼信息。
+
+```
+class Character {
+    public void sayHello() {
+        System.out.println(“Hello! I am a character in this game.”);
+    }
+}
+```
+
+
+
+2. 实现自定义任务
+
+`PrintHelloTask` 是一个自定义的任务，继承自 `LeafTask<Character>`。它的主要逻辑是调用角色的 `sayHello` 方法。
+
+```
+class PrintHelloTask extends LeafTask<Character> {
+    @Override
+    public Status execute() {
+        Character character = getObject();
+        character.sayHello();
+        return Status.SUCCEEDED;
+    }
+
+    @Override
+    protected Task<Character> copyTo(Task<Character> task) {
+        return task;
+    }
+}
+```
+
+
+
+3. 主类与行为树创建
+
+在 `BehaviorTreeExample` 中，我们创建了一个角色实例，以及一个行为树实例，随后运行一个简单的循环来执行行为树的逻辑。
+
+```
+public class BehaviorTreeExample {
+    public static void main(String[] args) {
+        Character character = new Character();
+        BehaviorTree<Character> behaviorTree = new BehaviorTree<>(createBehaviorTreeStructure(), character);
+
+        for (int i = 0; i < 10; i++) {
+            behaviorTree.step();
+        }
+    }
+
+    private static Task<Character> createBehaviorTreeStructure() {
+        Sequence<Character> rootSequence = new Sequence<>();
+        // 使用 ConstantIntegerDistribution 来指定重复次数
+        rootSequence.addChild(new Repeat<>(new ConstantIntegerDistribution(1), new PrintHelloTask()));
+        rootSequence.addChild(new Success<Character>());
+        return rootSequence;
+    }
+}
+```
+
+
+
+4. 行为树结构
+
+在 `createBehaviorTreeStructure` 方法中，我们定义了行为树的结构。使用 `Sequence` 节点作为根节点，添加一个 `Repeat` 装饰器来控制 `PrintHelloTask` 的执行次数为 1 次。
+
+```
+private static Task<Character> createBehaviorTreeStructure() {
+    Sequence<Character> rootSequence = new Sequence<>();
+    rootSequence.addChild(new Repeat<>(new ConstantIntegerDistribution(1), new PrintHelloTask()));
+    rootSequence.addChild(new Success<Character>());
+    return rootSequence;
+}
+```
+
+运行结果：
+
+![image-20240812005850599](./../img/image-20240812005850599.png)
+
+
+
+## 8.3 状态机，完整代码（代码在mystatus包下）
+
+LibGDX 的 gdx-ai 库支持有限状态机（Finite State Machine, FSM）来管理对象的状态转换，这在游戏开发中广泛用于管理角色行为状态。下面是一个简单的 Java 示例，展示如何使用 gdx-ai 实现状态机并进行演示。
+
+准备工作
+
+确保你已经将 gdx-ai 库添加到你的项目中。如果使用 Maven，可以在 `pom.xml` 中添加如下依赖：
+
+```
+<dependency>
+    <groupId>com.badlogicgames.gdx</groupId>
+    <artifactId>gdx-ai</artifactId>
+    <version>1.8.2</version>
+</dependency>
+```
+
+示例代码
+
+以下是一个完整的实现状态机的 Java 示例代码：
 
 ```
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.fsm.StateTransition;
-import com.badlogic.gdx.ai.fsm.Transition;
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import com.badlogic.gdx.ai.msg.Telegram;
 
-public class StateMachineExample {
-    public static void main(String[] args) {
-        // 创建状态
-        State idleState = new IdleState();
-        State walkState = new WalkState();
-        State runState = new RunState();
+class Character {
+    private StateMachine<Character, CharacterState> stateMachine;
 
-        // 创建状态转换条件
-        Transition idleToWalk = new Transition() {
-            @Override
-            public boolean evaluate() {
-                return playerIsWalking();
-            }
-        };
-        Transition walkToRun = new Transition() {
-            @Override
-            public boolean evaluate() {
-                return playerIsRunning();
-            }
-        };
-        Transition runToIdle = new Transition() {
-            @Override
-            public boolean evaluate() {
-                return playerIsIdle();
-            }
-        };
+    public Character() {
+        stateMachine = new DefaultStateMachine<>(this, CharacterState.IDLE);
+    }
 
-        // 创建状态转换
-        StateTransition idleToWalkTransition = new StateTransition(idleState, walkState, idleToWalk);
-        StateTransition walkToRunTransition = new StateTransition(walkState, runState, walkToRun);
-        StateTransition runToIdleTransition = new StateTransition(runState, idleState, runToIdle);
+    public void update() {
+        stateMachine.update();
+    }
 
-        // 创建状态机并添加状态转换
-        StateMachine stateMachine = new StateMachine();
-        stateMachine.addTransition(idleToWalkTransition);
-        stateMachine.addTransition(walkToRunTransition);
-        stateMachine.addTransition(runToIdleTransition);
+    public void changeState(CharacterState newState) {
+        stateMachine.changeState(newState);
+    }
 
-        // 设置初始状态并执行状态机
-        stateMachine.setInitialState(idleState);
-        while (!stateMachine.isInState(idleState)) {
-            stateMachine.update();
-        }
+    public StateMachine<Character, CharacterState> getStateMachine() {
+        return stateMachine;
+    }
+
+    public void performAction(String action) {
+        System.out.println("Performing action: " + action);
     }
 }
 
+enum CharacterState implements State<Character> {
+    IDLE {
+        @Override
+        public void update(Character character) {
+            System.out.println(“Character is idling…”);
+        }
+    },
+    WALKING {
+        @Override
+        public void enter(Character character) {
+            System.out.println(“Character starts walking.”);
+        }
+
+        @Override
+        public void update(Character character) {
+            character.performAction(“Walking”);
+        }
+
+        @Override
+        public void exit(Character character) {
+            System.out.println(“Character stops walking.”);
+        }
+    },
+    RUNNING {
+        @Override
+        public void enter(Character character) {
+            System.out.println(“Character starts running.”);
+        }
+
+        @Override
+        public void update(Character character) {
+            character.performAction(“Running”);
+        }
+
+        @Override
+        public void exit(Character character) {
+            System.out.println(“Character stops running.”);
+        }
+    };
+
+    @Override
+    public void enter(Character entity) {
+    }
+
+    @Override
+    public void update(Character entity) {
+    }
+
+    @Override
+    public void exit(Character entity) {
+    }
+
+    @Override
+    public boolean onMessage(Character entity, Telegram telegram) {
+        return false;
+    }
+}
+
+public class StateMachineExample {
+    public static void main(String[] args) {
+        Character character = new Character();
+
+        // 演示状态切换
+        character.update(); // Initially idle
+
+        character.changeState(CharacterState.WALKING);
+        character.update(); // Walking
+
+        character.changeState(CharacterState.RUNNING);
+        character.update(); // Running
+
+        character.changeState(CharacterState.IDLE);
+        character.update(); // Back to idle
+    }
+}
 ```
 
+ 代码解析
+
+\- **Character 类**: 角色类主要管理状态机并调用其更新和状态切换方法。
+
+\- **CharacterState 枚举**: 定义了角色的所有可能状态，包括 `IDLE`、`WALKING` 和 `RUNNING`，每个状态都实现了 `State` 接口，通过 `enter`、`update` 和 `exit` 方法来管理状态特定的行为和打印信息。
+
+\- **StateMachineExample 类**: 主类演示状态机的使用，通过角色实例管理状态并触发变化。
+
+ 执行机制
+
+1. **初始化状态**：在 `Character` 的构造函数中初始化状态机，初始状态为 `IDLE`。
+
+2. **状态更新**：在 `update()` 方法中调用当前状态的 `update` 行为。
+
+3. **状态切换**：通过 `changeState()` 方法切换角色的当前状态。
+
+运行结果：
+
+![image-20240812010746563](./../img/image-20240812010746563.png)
