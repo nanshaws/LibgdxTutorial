@@ -421,3 +421,118 @@ public class StateMachineExample {
 运行结果：
 
 ![image-20240812010746563](./../img/image-20240812010746563.png)
+
+
+
+
+
+
+
+
+
+## 8.6 消息处理（代码在myMessage包下）
+
+消息处理在游戏中是非常重要的，比如说一个玩家攻击npc，这个时候就要传送一个attack的信息从玩家给到npc，同时npc拿到这个信息会进行逃跑或者反击处理，消息传递的过程中可以给其附加消息，就比如说当玩家带枪去攻击npc的时候，npc就只能逃跑
+
+1. 消息定义
+
+首先，你需要定义消息的类型。在游戏中，消息通常用枚举类型来表示。
+
+```
+public enum MessageType {
+    ATTACK,
+    DEFEND,
+    PATROL
+}
+```
+
+2. 消息监听器和派发器
+
+接下来，设置消息监听器（一个可以接收消息的组件）和消息派发器（负责发送消息的对象）。
+
+```
+import com.badlogic.gdx.ai.msg.*;
+
+public class AIEntity implements Telegraph {
+    private String name;
+
+    public AIEntity(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean handleMessage(Telegram msg) {
+        MessageType messageType = MessageType.values()[msg.message];
+        switch (messageType) {
+            case ATTACK:
+                System.out.println(name + " received a ATTACK message with extra info: " + msg.extraInfo);
+                break;
+            case DEFEND:
+                System.out.println(name + " received a DEFEND message with extra info: " + msg.extraInfo);
+                break;
+            case PATROL:
+                System.out.println(name + " received a PATROL message with extra info: " + msg.extraInfo);
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+}
+
+public class AIDemo {
+    public static void main(String[] args) {
+        // 创建实体和消息派发器
+        AIEntity entity1 = new AIEntity(“Entity1”);
+        AIEntity entity2 = new AIEntity(“Entity2”);
+
+        MessageDispatcher dispatcher = new MessageDispatcher();
+
+        // 注册实体到消息派发器
+        dispatcher.addListener(entity1, MessageType.ATTACK.ordinal());
+        dispatcher.addListener(entity2, MessageType.DEFEND.ordinal());
+        dispatcher.addListener(entity2, MessageType.PATROL.ordinal());
+
+        // 发送消息
+        dispatcher.dispatchMessage(MessageType.ATTACK.ordinal());
+        dispatcher.dispatchMessage(entity1, entity2, MessageType.PATROL.ordinal(), "ExtraInfo", false);
+    }
+}
+```
+
+
+
+ 代码说明
+
+1. **Telegraph 接口**: `AIEntity` 实现了 `Telegraph` 接口，使其能够接收消息。`handleMessage` 方法是处理收到消息的地方。
+
+2. **MessageDispatcher**: `MessageDispatcher` 是负责消息发送的组件。它可以直接发送消息给指定的接收者，或广播消息给所有注册了监听器的实体。
+
+3. **消息发送和接收**:
+   \- 注册监听器：使用 `addListener` 方法来规定哪些实体对哪些消息感兴趣，此处通过 `MessageType` 的枚举索引来注册监听器。
+   \- 发送消息：通过 `dispatchMessage` 方法发送消息。消息可以包括一个额外的信息体（如 `"ExtraInfo"`），以便接收者利用。
+
+4. **handleMessage**: 接收到消息后，根据消息类型进行相应的操作。此处通过日志输出来模拟游戏中不同的响应行为。
+
+ 参数解析
+
+ dispatcher.dispatchMessage(entity1, entity2, MessageType.PATROL.ordinal(), "ExtraInfo", false);
+
+1. **`entity1`** (`Telegraph sender`):
+   \- 这是消息的发送者。它是一个实现了 `Telegraph` 接口的对象。在游戏中，这通常是某个意识到需要触发事件或进行通信的角色或系统。
+
+2. **`entity2`** (`Telegraph receiver`):
+   \- 这是消息的接收者。它也是一个实现了 `Telegraph` 接口的对象。这个对象会被通知有消息到达并负责处理这个消息。如果接收者为 `null`，则消息会被广播给所有注册了该消息类型的监听器。
+
+3. **`MessageType.PATROL.ordinal()`** (`int msg`):
+   \- 这是消息的类型。`MessageType` 是一个枚举，`PATROL` 是其中的一个枚举常量。使用 `ordinal()` 方法将枚举常量转化为其枚举定义中的整数顺序（通常从 0 开始）。
+
+4. **`"ExtraInfo"`** (`Object extraInfo`):
+   \- 这是附加信息，随同消息一起发出。可以是任何对象，用于传递额外的数据或上下文，以便接收者理解消息的意图或具体内容。
+
+5. **`false`** (`boolean needsReturnReceipt`):
+   \- 这个参数表示是否需要消息回执（return receipt）。`false` 意味着不要求发送消息的确认回执，大多数情况下用于简单的单向通知。
+
+运行结果如下：
+
+![image-20240812102423803](./../img/image-20240812102423803.png)
