@@ -536,3 +536,190 @@ public class AIDemo {
 运行结果如下：
 
 ![image-20240812102423803](./../img/image-20240812102423803.png)
+
+
+
+## 8.7 调度（代码在LibgdxTest项目的core的game包下的）
+
+下面是一个示例代码，演示了如何使用简单的任务调度系统来进行 AI 任务的分配和调度。此例子中，我们创建了一个基于频率的任务调度器，并为多个任务设置频率和优先级。当调度器在每帧更新时，它将根据这些参数来选择和运行任务。
+
+示例代码
+
+```
+import java.util.ArrayList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+interface Schedulable {
+    void runTask(float deltaTime);
+    int getFrequency();
+    int getPriority();
+}
+
+class AI_Task implements Schedulable {
+    private String name;
+    private int frequency;
+    private int priority;
+
+    public AI_Task(String name, int frequency, int priority) {
+        this.name = name;
+        this.frequency = frequency;
+        this.priority = priority;
+    }
+
+    @Override
+    public void runTask(float deltaTime) {
+        System.out.println("Running task: " + name + " with deltaTime: " + deltaTime);
+    }
+
+    @Override
+    public int getFrequency() {
+        return frequency;
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+}
+
+class LoadBalancingScheduler {
+    private List<Schedulable> tasks = new ArrayList<>();
+    private Queue<SchedulerTask> taskQueue = new PriorityQueue<>();
+    private int frameCounter = 0;
+
+    public void addTask(Schedulable task) {
+        tasks.add(task);
+    }
+
+    public void update(float deltaTime) {
+        frameCounter++;
+        taskQueue.clear();
+        for (Schedulable task : tasks) {
+            if (frameCounter % task.getFrequency() == 0) {
+                taskQueue.add(new SchedulerTask(task, deltaTime));
+            }
+        }
+
+        while (!taskQueue.isEmpty()) {
+            SchedulerTask schedulerTask = taskQueue.poll();
+            schedulerTask.run();
+        }
+    }
+
+    private static class SchedulerTask implements Comparable<SchedulerTask> {
+        private Schedulable task;
+        private float deltaTime;
+
+        public SchedulerTask(Schedulable task, float deltaTime) {
+            this.task = task;
+            this.deltaTime = deltaTime;
+        }
+
+        @Override
+        public int compareTo(SchedulerTask o) {
+            return Integer.compare(o.task.getPriority(), this.task.getPriority());
+        }
+
+        public void run() {
+            task.runTask(deltaTime);
+        }
+    }
+}
+
+public class AIDemo {
+    public static void main(String[] args) {
+        LoadBalancingScheduler scheduler = new LoadBalancingScheduler();
+
+        // Create tasks with different frequencies and priorities
+        Schedulable task1 = new AI_Task(“Task1”, 2, 1);
+        Schedulable task2 = new AI_Task(“Task2”, 3, 2);
+        Schedulable task3 = new AI_Task(“Task3”, 5, 3);
+
+        scheduler.addTask(task1);
+        scheduler.addTask(task2);
+        scheduler.addTask(task3);
+
+        // Simulate 10 frames update
+        for (int i = 0; i < 10; i++) {
+            System.out.println("Frame: " + i);
+            scheduler.update(1.0f / 60.0f);  // Assuming 60 FPS
+            System.out.println();
+            try {
+                Thread.sleep(1000 / 60); // Simulate frame duration
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+代码说明
+
+1. **Schedulable Interface**: 定义了一些必须实现的方法，以便任务可以被调度。每个任务都有频率和优先级。
+
+2. **AI_Task Class**: 实现 `Schedulable` 接口，为任务提供了名称、频率和优先级。这些任务可以被调度系统使用。
+
+3. **LoadBalancingScheduler Class**: 管理 `Schedulable` 任务，并根据“频率”和“优先级”决定哪些任务将在当前帧上运行。
+
+4. **SchedulerTask**: 内部类，用于包装任务，并根据其优先级进行排序。
+
+5. **AIDemo Class**: 包含主方法，演示了如何创建任务，并将它们添加到调度系统中。程序模拟了 10 帧的游戏循环。
+
+解释：
+
+ 代码结构
+
+1. **接口 `Schedulable`:**
+   \- 这是一个接口，定义了需要实现的方法。
+   \- **`runTask(float deltaTime)`:** 这个方法需要执行任务的逻辑。
+   \- **`getFrequency()`:** 获取任务执行的频率。
+   \- **`getPriority()`:** 获取任务的优先级。
+
+2. **类 `AI_Task`:**
+   \- 实现了 `Schedulable` 接口。
+   \- **字段 `name`, `frequency`, `priority`:** 分别表示任务的名称、执行频率和优先级。
+   \- **构造函数 `AI_Task(String name, int frequency, int priority)`:** 初始化任务的名称、频率和优先级。
+   \- **方法 `runTask(float deltaTime)`:** 打印任务执行的日志。
+   \- **方法 `getFrequency()` 和 `getPriority()`:** 返回任务的频率和优先级。
+
+3. **类 `LoadBalancingScheduler`:**
+   \- 管理和调度一组 `Schedulable` 任务。
+   \- **`tasks`:** 存储所有添加的任务。
+   \- **`taskQueue`:** 基于优先级的任务队列。
+   \- **`frameCounter`:** 记录当前帧计数，用于决定哪些任务需要在当前帧中执行。
+   \- **方法 `addTask(Schedulable task)`:** 向调度器添加一个任务。
+   \- **方法 `update(float deltaTime)`:** 每帧调用一次，用于调度和处理任务。
+   \- 清空 `taskQueue`。
+   \- 遍历所有任务，检查是否需要在当前帧执行（`frameCounter % frequency == 0`）。
+   \- 按优先级将需要运行的任务添加到 `taskQueue`。
+   \- 执行所有在队列中的任务。
+
+\- **内部类 `SchedulerTask`:**
+\- 包装 `Schedulable` 对象，附带 `deltaTime` 信息。
+\- 实现 `Comparable<SchedulerTask>` 接口，用于在队列中按优先级排序。
+\- **`compareTo(SchedulerTask o)`:** 将任务按优先级倒序（优先级值高的任务优先执行）。
+\- **方法 `run()`:** 执行封装的任务。
+
+4. **类 `AIDemo`:**
+   \- 包含主方法 `main(String[] args)`。
+   \- **创建和配置任务:**
+   \- 实例化三个不同频率和优先级的任务 `task1`, `task2`, `task3`。
+   \- 将任务添加到 `LoadBalancingScheduler` 中。
+   \- **模拟帧更新:**
+   \- 运行一个循环，模拟 10 帧。
+   \- 每一帧调用 `scheduler.update(1.0f / 60.0f)` 执行任务，假设每秒 60 帧。
+   \- 使用 `Thread.sleep(1000 / 60)` 模拟帧的持续时间。
+
+ 代码中的注意事项
+\- 使用优先级队列（`PriorityQueue`）自动管理任务的执行顺序。
+\- 每个任务根据其频率控制是否在当前帧执行。
+\- 如果任务的频率因数较大，则任务执行频率更低。
+\- 使用优先级实现任务的时间分配策略，高优先级任务获得更多处理机会。
+\- `LoadBalancingScheduler` 可以在游戏复杂时方便地管理多个任务，保持帧率稳定。
+
+运行结果为：
+
+![image-20240812143034039](./../img/image-20240812143034039.png)
