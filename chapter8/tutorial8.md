@@ -1,104 +1,125 @@
-## 8.1 路径查找
+## 8.1 路径寻路（代码在mypath包下）
 
-​        在Libgdx中，您可以使用FileHandle类来查找和管理文件和目录。下面是一个如何使用FileHandle类在Libgdx项目的assets目录中查找文件的示例:
+​        在使用 GDX-AI 进行路径寻路时，我们通常需要使用 Graph 接口和相关类，如 Node 和 Connection。下面是一个简单的示例，演示如何在 Java 中使用 GDX-AI 来实现路径寻路。
 
-```
-public class Game extends ApplicationAdapter {
-    @Override
-    public void create() {
-        FileHandle file = Gdx.files.internal("data/example.txt");
-        if (file.exists()) {
-            String content = file.readString();
-            System.out.println("File content: " + content);
-        } else {
-            System.out.println("File not found");
-        }
-    }
-}
-```
-
-​        在这个例子中，Gdx.files.internal方法用于获取资产文件夹“data”目录下名为“example.txt”的文件的FileHandle。然后调用exists方法来检查文件是否存在，并调用readString方法来读取文件的内容。
-
-如果需要查找目录，可以使用list方法获得目录中文件和目录的列表。这里有一个例子:
+首先，确保你已在项目中添加了 GDX-AI 的依赖库。如果你使用的是 Gradle，你可以在 `build.gradle` 文件中添加以下依赖：
 
 ```
-public class Game extends ApplicationAdapter {
-    @Override
-    public void create() {
-        FileHandle dir = Gdx.files.internal("data");
-
-        if (dir.isDirectory()) {
-            FileHandle[] files = dir.list();
-
-            for (FileHandle file : files) {
-                System.out.println("File: " + file.name());
-            }
-        } else {
-            System.out.println("Not a directory");
-        }
-    }
-}
+implementation ‘com.badlogicgames.gdx:gdx-ai:1.8.2’
 ```
 
-在本例中，使用Gdx.files.internal方法获取“data”目录的FileHandle。然后调用isDirectory方法来检查该目录是否存在，并调用list方法来获取该目录中的文件和目录的列表。调用name方法来获取每个文件的名称。
-
-​        需要注意的是，FileHandle类提供了几种管理文件和目录的方法，包括复制、移动、删除和mkdirs。您可以使用这些方法执行各种文件操作，例如复制文件、移动文件、删除文件或创建目录。
-
-下面是一个如何使用FileHandle类复制文件的例子:
+示例 Java 代码
 
 ```
-public class Game extends ApplicationAdapter {
-    @Override
-    public void create() {
-        FileHandle srcFile = Gdx.files.internal("data/example.txt");
-        FileHandle destFile = Gdx.files.internal("data/example_copy.txt");
-
-        if (srcFile.exists()) {
-            srcFile.copyTo(destFile);
-            System.out.println("File copied");
-        } else {
-            System.out.println("Source file not found");
-        }
-    }
-}
-```
-
-​        在本例中，FileHandle类用于获取源文件和目标文件的FileHandle。调用exists方法检查源文件是否存在，调用copyTo方法将源文件复制到目标文件。println方法用于打印一条消息，表明文件是否复制成功。
-
-
-
-在libGDX中，可以使用AStar类进行路径查找。以下是一个简单的示例：
-
-```
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.ai.pfa.DefaultConnection;
-import com.badlogic.gdx.ai.pfa.PathFinderAdapter;
+import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
+import com.badlogic.gdx.ai.pfa.Graph;
+import com.badlogic.gdx.ai.pfa.IndexedGraph;
+import com.badlogic.gdx.ai.pfa.PathFinderRequest;
+import com.badlogic.gdx.ai.pfa.PathSmoother;
+import com.badlogic.gdx.ai.pfa.PathSmootherRequest;
+import com.badlogic.gdx.ai.pfa.SmoothableGraphPath;
+import com.badlogic.gdx.ai.pfa.SmoothableGraphPath.NodeWithPosition;
+import com.badlogic.gdx.ai.pfa.Smoother;
+import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
-import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder.Path;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.utils.Array;
 
-public class PathfindingExample {
-    public static void main(String[] args) {
-        // 加载地图
-        TiledMap map = new TmxMapLoader().load("pathfinding_map.tmx");
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
+class Node {
+    int index;
+    float x, y;
 
-        // 创建路径查找器
-        PathFinderAdapter<Vector2> pathFinderAdapter = new TiledMapAdapter(layer);
-        IndexedAStarPathFinder<Vector2> pathFinder = new IndexedAStarPathFinder<>(pathFinderAdapter, false);
-
-        // 设置起点和终点
-        Vector2 start = new Vector2(1, 1);
-        Vector2 end = new Vector2(10, 10);
-
-        // 查找路径
-        Path<Vector2> path = pathFinder.findPath(start, end);
-        System.out.println("找到的路径：" + path);
+    public Node(int index, float x, float y) {
+        this.index = index;
+        this.x = x;
+        this.y = y;
     }
-}   
+}
+
+class MapGraph implements IndexedGraph<Node> {
+    Array<Node> nodes = new Array<>();
+    Array<Connection<Node>> connections = new Array<>();
+
+    @Override
+    public int getIndex(Node node) {
+        return node.index;
+    }
+
+    @Override
+    public int getNodeCount() {
+        return nodes.size;
+    }
+
+    @Override
+    public Array<Connection<Node>> getConnections(Node fromNode) {
+        return connections; // Simplified for example purposes
+    }
+}
+
+class LocationHeuristic implements Heuristic<Node> {
+    @Override
+    public float estimate(Node node, Node endNode) {
+        return Math.abs(node.x - endNode.x) + Math.abs(node.y - endNode.y);
+    }
+}
+
+public class PathFindingExample {
+    public static void main(String[] args) {
+        MapGraph graph = new MapGraph();
+        Node startNode = new Node(0, 0, 0);
+        Node goalNode = new Node(1, 10, 10);
+
+        graph.nodes.add(startNode);
+        graph.nodes.add(goalNode);
+
+        Connection<Node> connection = new Connection<>() {
+            @Override
+            public float getCost() {
+                return 1; // Same cost for simplicity
+            }
+
+            @Override
+            public Node getFromNode() {
+                return startNode;
+            }
+
+            @Override
+            public Node getToNode() {
+                return goalNode;
+            }
+        };
+
+        graph.connections.add(connection);
+
+        IndexedAStarPathFinder<Node> pathFinder = new IndexedAStarPathFinder<>(graph);
+        DefaultGraphPath<Node> path = new DefaultGraphPath<>();
+        pathFinder.searchNodePath(startNode, goalNode, new LocationHeuristic(), path);
+
+        for (Node node : path) {
+            System.out.println("Node: " + node.index);
+        }
+    }
+}
 ```
+
+说明
+
+**Node 类**: 表示图中的节点，并包括索引和位置。
+
+**MapGraph 类**: 实现了 `IndexedGraph` 接口，负责管理节点和连接。
+
+**LocationHeuristic 类**: 实现了 `Heuristic` 接口，用于估计从一个节点到另一个节点的距离。
+
+**Main 函数**: 创建一个简单的图并在其中进行路径规划。
+
+运行结果如下：
+
+![image-20240812091746960](./../img/image-20240812091746960.png)
+
+**我来解释一下， pathFinder.searchNodePath(startNode, goalNode, new LocationHeuristic(), path);就是startNode节点到goalNode节点经过的节点**
+
+**我在项目中加了一个更复杂的代码，可以更加展示这种效果**
 
 ## 8.2 AI行为树（代码在mybtree包下）
 
