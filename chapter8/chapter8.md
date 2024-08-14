@@ -113,6 +113,44 @@ public class PathFindingExample {
 
 **Main 函数**: 创建一个简单的图并在其中进行路径规划。
 
+***我的理解***（项目LibgdxTest的wayFinding包下）：首先定义节点Node，其次画图GridGraph去实现IndexedGraph<Node>用于表示图（Graph）结构，它允许图算法（如 A* 搜索）在任意节点上进行操作。实现 `IndexedGraph` 的类需要提供图中节点的相关信息和连接关系，以便算法可以执行路径查找等操作，在然后定义一个类PathFinderExample，去实现路径查找功能，路径查找所需要的三个属性
+
+```
+private GridGraph gridGraph;
+private IndexedAStarPathFinder<Node> pathFinder;
+private Heuristic<Node> heuristic;
+```
+
+第一个图，可以对任意一个节点进行操作的一个类，第二个A*Start路径查找的查找器，第三个启发式函数，如果是曼哈顿距离则是获得最小路径的一个因子
+
+```
+public PathFinderExample(GridGraph gridGraph) {
+    this.gridGraph = gridGraph;
+    this.pathFinder = new IndexedAStarPathFinder<>(gridGraph);
+
+    // 使用曼哈顿距离作为启发式函数，可以更换为其他合适的启发式算法
+    this.heuristic = (node, endNode) -> Math.abs(node.x - endNode.x) + Math.abs(node.y - endNode.y);
+}
+
+public GraphPath<Node> findPath(Node startNode, Node endNode) {
+    GraphPath<Node> path = new DefaultGraphPath<>();
+    pathFinder.searchNodePath(startNode, endNode, heuristic, path);
+    return path;
+}
+```
+
+第一个赋值，第二个查询方法，直接调用DefaultGraphPath的searchNodePath方法即可
+
+返回的path应该就是最佳路径的新图，之后，咱们就可以用个for循环去取出node节点即可
+
+```
+for (Node node : path) {
+    shapeRenderer.rect(node.x * CELL_SIZE, node.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+}
+```
+
+那个大家直接看第二个图就行了，第一个项目我觉得演示的不是很好
+
 运行结果如下：
 
 ![image-20240812091746960](./../img/image-20240812091746960.png)
