@@ -119,7 +119,11 @@ public class PathFindingExample {
 
 **我来解释一下， pathFinder.searchNodePath(startNode, goalNode, new LocationHeuristic(), path);就是startNode节点到goalNode节点经过的节点**
 
-**我在项目中加了一个更复杂的代码，可以更加展示这种效果**
+**我在项目中加了一个更复杂的代码，可以更加展示这种效果，另外LibgdxTest里面的wayFinding包里面的项目也更加显示的演示了这种A*寻路方式**
+
+运行结果：
+
+![image-20240814102837833](./../img/image-20240814102837833.png)
 
 ## 8.2 AI行为树（代码在mybtree包下）
 
