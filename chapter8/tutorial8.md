@@ -424,9 +424,506 @@ public class StateMachineExample {
 
 
 
+## 8.4 转向行为，完整代码（代码在LibgdxTest项目的core.game的steering包下的）
+
+**完整代码：**
+
+```
+package com.mygdx.game.steering;
+
+import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.utils.Location;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+
+public class SteeringActor extends Sprite implements Steerable<Vector2> {
+    private Vector2 position;
+    private Vector2 linearVelocity;
+    private float angularVelocity;
+    private float boundingRadius;
+    private boolean tagged;
+    
+    private float maxLinearSpeed;
+    private float maxLinearAcceleration;
+    private float maxAngularSpeed;
+    private float maxAngularAcceleration;
+
+    private boolean independentFacing;
+
+    private SteeringBehavior<Vector2> steeringBehavior;
+    private SteeringAcceleration<Vector2> steeringOutput;
+
+    public SteeringActor(Texture texture) {
+        super(texture);
+        this.position = new Vector2(getX(), getY());
+        this.linearVelocity = new Vector2();
+        this.boundingRadius = Math.max(getWidth(), getHeight()) / 2;
+        this.steeringOutput = new SteeringAcceleration<>(new Vector2());
+    }
+
+    public SteeringActor(Texture texture, Vector2 initialPosition) {
+        this(texture);
+        this.position.set(initialPosition);
+        setPosition(initialPosition.x, initialPosition.y);
+    }
+
+    public void setSteeringBehavior(SteeringBehavior<Vector2> steeringBehavior) {
+        this.steeringBehavior = steeringBehavior;
+    }
+
+    public void applySteering(float deltaTime) {
+        if (steeringBehavior != null) {
+            steeringBehavior.calculateSteering(steeringOutput);
+
+            // Apply acceleration to velocity
+            linearVelocity.mulAdd(steeringOutput.linear, deltaTime).limit(getMaxLinearSpeed());
+
+            // Update position and angle
+            position.mulAdd(linearVelocity, deltaTime);
+            setPosition(position.x, position.y);
+
+            if (independentFacing) {
+                float newOrientation = vectorToAngle(linearVelocity);
+                setOrientation(newOrientation);
+                setRotation(newOrientation * MathUtils.radiansToDegrees);
+            }
+        }
+    }
+
+    @Override
+    public Vector2 getPosition() {
+        return position;
+    }
+
+    @Override
+    public float getOrientation() {
+        return (float) Math.toRadians(getRotation());
+    }
+
+    @Override
+    public void setOrientation(float orientation) {
+        setRotation((float) Math.toDegrees(orientation));
+    }
+
+    @Override
+    public Vector2 getLinearVelocity() {
+        return linearVelocity;
+    }
+
+    @Override
+    public float getAngularVelocity() {
+        return angularVelocity;
+    }
+
+    @Override
+    public float getBoundingRadius() {
+        return boundingRadius;
+    }
+
+    @Override
+    public boolean isTagged() {
+        return tagged;
+    }
+
+    @Override
+    public void setTagged(boolean tagged) {
+        this.tagged = tagged;
+    }
+
+    @Override
+    public float getZeroLinearSpeedThreshold() {
+        return 0.1f;
+    }
+
+    @Override
+    public void setZeroLinearSpeedThreshold(float value) {
+        // no-op
+    }
+
+    @Override
+    public float getMaxLinearSpeed() {
+        return maxLinearSpeed;
+    }
+
+    @Override
+    public void setMaxLinearSpeed(float maxLinearSpeed) {
+        this.maxLinearSpeed = maxLinearSpeed;
+    }
+
+    @Override
+    public float getMaxLinearAcceleration() {
+        return maxLinearAcceleration;
+    }
+
+    @Override
+    public void setMaxLinearAcceleration(float maxLinearAcceleration) {
+        this.maxLinearAcceleration = maxLinearAcceleration;
+    }
+
+    @Override
+    public float getMaxAngularSpeed() {
+        return maxAngularSpeed;
+    }
+
+    @Override
+    public void setMaxAngularSpeed(float maxAngularSpeed) {
+        this.maxAngularSpeed = maxAngularSpeed;
+    }
+
+    @Override
+    public float getMaxAngularAcceleration() {
+        return maxAngularAcceleration;
+    }
+
+    @Override
+    public void setMaxAngularAcceleration(float maxAngularAcceleration) {
+        this.maxAngularAcceleration = maxAngularAcceleration;
+    }
+
+    public Vector2 newVector() {
+        return new Vector2();
+    }
+
+    @Override
+    public float vectorToAngle(Vector2 vector) {
+        return (float) Math.atan2(-vector.x, vector.y);
+    }
+
+    @Override
+    public Vector2 angleToVector(Vector2 outVector, float angle) {
+        outVector.x = -(float) Math.sin(angle);
+        outVector.y = (float) Math.cos(angle);
+        return outVector;
+    }
+
+    @Override
+    public Location<Vector2> newLocation() {
+        return null; // Implement if needed
+    }
+}
+```
+
+`SteeringActor` 类是一个实现了 `Steerable<Vector2>` 接口的角色类，能够应用 AI steering behaviors 来控制自身运动。下面是类中各个部分的详细解析：
+
+类继承和接口实现
+
+```
+public class SteeringActor extends Sprite implements Steerable<Vector2>
+```
+
+\- **继承 `Sprite`**: `SteeringActor` 是一个能够在 2D 平面中渲染的图像实体。
+\- **实现 `Steerable<Vector2>` 接口**: 表示该类支持方向操控和运动行为控制。
+
+ 成员变量
+
+```
+private Vector2 position;
+private Vector2 linearVelocity;
+private float angularVelocity;
+private float boundingRadius;
+private boolean tagged;
+
+private float maxLinearSpeed;
+private float maxLinearAcceleration;
+private float maxAngularSpeed;
+private float maxAngularAcceleration;
+
+private boolean independentFacing;
+
+private SteeringBehavior<Vector2> steeringBehavior;
+private SteeringAcceleration<Vector2> steeringOutput;
+```
 
 
 
+\- **位置和运动**：`position` 保存当前坐标，`linearVelocity` 和 `angularVelocity` 记录线性和角速度。
+\- **边界半径**：用于碰撞检测的 `boundingRadius`。
+\- **标记状态**：`tagged` 用于指示对象是否被标记，可用于群体行为。
+\- **运动限制**：`maxLinearSpeed`、`maxLinearAcceleration`、`maxAngularSpeed` 和 `maxAngularAcceleration` 限制角色的速度和加速度。
+\- **独立朝向**：`independentFacing` 确定是否独立于运动方向来设置朝向。
+\- **AI 行为**：`steeringBehavior` 持有 AI steering 行为的实例，而 `steeringOutput` 是计算结果。
+
+构造方法
+
+```
+public SteeringActor(Texture texture)
+public SteeringActor(Texture texture, Vector2 initialPosition)
+```
+
+
+
+\- **初始化**：构造方法初始化各种运动相关的变量，并设置纹理。第二个构造方法还允许直接定位初始位置。
+
+ 核心方法
+
+`setSteeringBehavior`
+
+```
+public void setSteeringBehavior(SteeringBehavior<Vector2> steeringBehavior)
+```
+
+
+
+\- **设置行为**：用于配置角色的AI steering行为。
+
+`applySteering`
+
+```
+public void applySteering(float deltaTime)
+```
+
+
+
+\- **应用运动学**：
+\- 根据当前的 `steeringBehavior` 计算得到 `steeringOutput`。
+\- 结合 `linearVelocity` 更新位置信息，通过 `deltaTime` 确保时间步长一致。
+\- 当 `independentFacing` 为 `true` 时，根据线速度调整朝向。
+
+Steerable 接口实现
+
+位置信息
+
+\- **`getPosition` / `getOrientation` / `setOrientation`**：处理实体的当前状态及其朝向。
+
+ 速度信息
+
+\- **`getLinearVelocity` / `getAngularVelocity`**：获取当前速度信息。
+
+ 碰撞半径
+
+\- **`getBoundingRadius`**：提供碰撞检测使用的对象半径。
+
+ 标记状态
+
+\- **`isTagged` / `setTagged`**：用于获取和设置实体是否处于标记状态。
+
+ 速度限制
+
+\- **`getMaxLinearSpeed` / `setMaxLinearSpeed`**：最大线速度。
+\- **`getMaxLinearAcceleration` / `setMaxLinearAcceleration`**：最大线性加速度。
+\- **`getMaxAngularSpeed` / `setMaxAngularSpeed`**：最大角速度。
+\- **`getMaxAngularAcceleration` / `setMaxAngularAcceleration`**：最大角加速度。
+
+映射转换
+
+\- **`vectorToAngle` / `angleToVector`**：用于处理运动向量和方向角的转换。
+
+其他方法
+
+\- **`newVector`**: 返回新的 `Vector2` 实例，用于创建新的向量实例。
+\- **`newLocation`**: 返回 null，需要时可以实现以支持具体位置的创建。
+
+这一类主要处理角色的运动方向和速度，通过结合 libGDX 的 graphics 和 AI 库来进行角色状态的更新和显示。角色的行为通过 Steering 类实现的不同逻辑来定义，从而实现各种智能行为建模如寻路、避障、避开群体等。
+
+**完整代码：**
+
+```
+package com.mygdx.game.steering;
+
+import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.steer.behaviors.Seek;
+import com.badlogic.gdx.graphics.Texture;
+
+public class SteeringBehaviorExample extends ApplicationAdapter {
+    private static final float MAX_FORCE = 1f;
+    private static final float MAX_VELOCITY = 100f;
+
+    private Batch batch;
+    private Texture characterTexture;
+    private OrthographicCamera camera;
+    private Viewport viewport;
+
+    private SteeringActor character;
+    private SteeringActor target;
+
+    @Override
+    public void create() {
+        batch = new SpriteBatch();
+        characterTexture = new Texture("character.png");
+
+        camera = new OrthographicCamera();
+        viewport = new ExtendViewport(1080, 920, camera);
+
+        character = new SteeringActor(characterTexture);
+        character.setMaxLinearSpeed(MAX_VELOCITY);
+        character.setMaxLinearAcceleration(MAX_FORCE);
+
+        Vector2 targetPosition = new Vector2(100, 100);
+        target = new SteeringActor(new Texture("target.png"), targetPosition);
+        character.setSize(64, 64);
+        target.setSize(64, 64);
+        // 使用 Arrive 行为替代 Seek 行为
+        SteeringBehavior<Vector2> arriveBehavior = new Arrive<>(character, target)
+                .setArrivalTolerance(0.001f)  // 设置到达目标的容忍距离
+                .setDecelerationRadius(20)   // 在此半径内开始减速
+                .setTimeToTarget(0.1f);       // 控制减速响应速度
+        character.setSteeringBehavior(arriveBehavior);
+    }
+
+    @Override
+    public void render() {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        character.applySteering(Gdx.graphics.getDeltaTime());
+
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        character.draw(batch);
+        target.draw(batch);
+        batch.end();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height);
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+        characterTexture.dispose();
+    }
+}
+```
+
+`SteeringBehaviorExample` 类是一个使用 libGDX 框架构建的示例应用程序，演示了经典的 AI Steering 行为，在这里实现了一个角色到达目标点的行为。以下是这个类的完整解析：
+
+类定义和成员变量
+
+```
+public class SteeringBehaviorExample extends ApplicationAdapter {
+    private static final float MAX_FORCE = 1f;
+    private static final float MAX_VELOCITY = 100f;
+
+    private Batch batch;
+    private Texture characterTexture;
+    private OrthographicCamera camera;
+    private Viewport viewport;
+
+    private SteeringActor character;
+    private SteeringActor target;
+```
+
+
+
+\- **`ApplicationAdapter`**: 继承自 `ApplicationAdapter`，这是 libGDX 提供的一个实现 `ApplicationListener` 接口的简易基类。
+\- **常量**: `MAX_FORCE` 和 `MAX_VELOCITY` 分别代表角色的最大加速度和最大速度。
+\- **`Batch`**: 用于批量渲染 2D 图形的工具。
+\- **`Texture`**: 角色的纹理。
+\- **`OrthographicCamera`**: 传统的正交摄像机，用于2D渲染。
+\- **`Viewport`**: 负责控制显示区域和坐标变换。
+\- **`SteeringActor`**: 自定义的可动角色，包含角色和目标。
+
+ create() 方法
+
+```
+@Override
+public void create() {
+    batch = new SpriteBatch();
+    characterTexture = new Texture(“character.png”);
+
+    camera = new OrthographicCamera();
+    viewport = new ExtendViewport(1080, 920, camera);
+
+    character = new SteeringActor(characterTexture);
+    character.setMaxLinearSpeed(MAX_VELOCITY);
+    character.setMaxLinearAcceleration(MAX_FORCE);
+
+    Vector2 targetPosition = new Vector2(100, 100);
+    target = new SteeringActor(new Texture(“target.png”), targetPosition);
+    character.setSize(64, 64);
+    target.setSize(64, 64);
+
+    SteeringBehavior<Vector2> arriveBehavior = new Arrive<>(character, target)
+            .setArrivalTolerance(0.001f)
+            .setDecelerationRadius(20)
+            .setTimeToTarget(0.1f);
+    character.setSteeringBehavior(arriveBehavior);
+}
+```
+
+
+
+\- **初始化资源**: `SpriteBatch` 和 `Texture` 是渲染基础元素。
+\- **摄像机和视口**: 设置了一个正交摄像机和伸缩视口以适应不同屏幕尺寸。
+\- **角色配置**: 创建 `SteeringActor` 角色并设置其最大速度和加速度。
+\- **目标配置**: 创建目标角色并设定初始位置。
+\- **Arrive 行为**: 配置 `Arrive` 行为用于角色，替代了传统的 `Seek` 行为。
+\- `setArrivalTolerance`: 设置停止的容忍阈值。
+\- `setDecelerationRadius`: 开始减速的距离。
+\- `setTimeToTarget`: 调节减速的响应时间。
+
+ render() 方法
+
+```
+@Override
+public void render() {
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+    character.applySteering(Gdx.graphics.getDeltaTime());
+
+    batch.setProjectionMatrix(camera.combined);
+    batch.begin();
+    character.draw(batch);
+    target.draw(batch);
+    batch.end();
+}
+```
+
+
+
+\- **清屏**: 使用 `glClear` 清除屏幕，使渲染帧干净。
+\- **应用行为**: 调用 `applySteering` 来更新角色状态。
+\- **渲染**: 批量绘制角色和目标。
+
+resize() 方法
+
+```
+@Override
+public void resize(int width, int height) {
+    viewport.update(width, height);
+}
+```
+
+
+
+\- **视口调整**: 调用 `viewport.update` 以适应窗口大小变化，确保图形正确缩放。
+
+dispose() 方法
+
+```
+@Override
+public void dispose() {
+    batch.dispose();
+    characterTexture.dispose();
+}
+```
+
+
+
+\- **资源清理**: 释放批处理和纹理资源以防止内存泄漏。
+
+总结
+
+`SteeringBehaviorExample` 类通过创建并配置 `SteeringActor` 对象以及其 `Arrive` 行为，实现简单的角色运动逻辑。该类展现了libGDX结合gdx-ai库的基本用法，是一个良好的入门示例，可帮助开发者理解如何在2D游戏场景中实现 AI 操控的运动行为什么。
+
+运行结果：
+
+![image-20240813112142210](./../img/image-20240813112142210.png)
 
 
 
