@@ -4,10 +4,10 @@
 
 ## 目录结构
 
-- chapter1 环境搭建
+- [chapter1](chapter1%2Flibgdx的安装.md) 环境搭建
   - 1.1 Java环境安装
   - 1.2 libgdx安装
-  - 1.3 理解libgdx的stage和actor的关系（核心重点）
+  - 1.3 理解libgdx的stage和actor的关系 [核心重点](chapter1%2Factor和stage的关系.md) 
 
 - [chapter2](chapter2%2Fchapter2.md) 基础入门
 
@@ -24,32 +24,32 @@
   - 3.3 滑动条
   - 3.4 列表视图
 
-- chapter4 动画与特效
+- [chapter4](chapter4%2Fchapter4.md) 动画与特效
 
   - 4.1 帧动画
   - 4.2 骨骼动画
   - 4.3 粒子系统
 
-- chapter5 音频与视频
+- [chapter5](chapter5%2Fchapter5.md) 音频与视频
 
   - 5.1 音频播放
   - 5.2 音效管理
   - 5.3 视频播放
 
-- chapter6 物理引擎
+- [chapter6](chapter6%2Fchapter6.md) 物理引擎
 
   - 6.1 Box2D简介
   - 6.2 创建物理世界
   - 6.3 刚体与关节
   - 6.4 碰撞监听
 
-- chapter7 网络编程
+- [chapter7](chapter7%2Fchapter7.md) 网络编程
 
   - 7.1 HTTP请求
   - 7.2 WebSocket通信
   - 7.3 UDP通信
 
-- chapter8 高级功能（我把官网的gdx-ai和ashley框架的tests示例代码完整运行成功后带出来了，供大家学习）
+- [chapter8](chapter8%2Fchapter8.md)（我把官网的gdx-ai和ashley框架的tests示例代码完整运行成功后带出来了，供大家学习）
 
   - 8.1 路径寻路
   - 8.2 AI行为树
@@ -59,7 +59,7 @@
   - 8.6 消息处理
   - 8.7 调度
 
-- chapter9 优化与调试
+- [chapter9](chapter9%2Fchapter9.md)优化与调试
 
   - 9.1 内存优化
   - 9.2 性能分析
@@ -72,13 +72,15 @@
   - 10.2 游戏实现
   - 10.3 游戏发布
 
-- chapter11 文件保存（保存游戏）
+- [chapter11](chapter11%2Fchapter11.md) 文件保存（保存游戏）
 
   - 11.1 游戏保存功能
   - 
 - chapter11 ECS系统——artemis
 
   - 12.1 world初始化流程
+
+- [chapter12] box2dlights（光与影）
 
     
 
