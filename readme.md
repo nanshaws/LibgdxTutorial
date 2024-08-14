@@ -49,7 +49,7 @@
   - 7.2 WebSocket通信
   - 7.3 UDP通信
 
-- [chapter8](chapter8%2Fchapter8.md) ECS系统——ashley
+- [chapter8](chapter8%2Fchapter8.md) gdx-ai
 
   - 8.1 路径寻路
   - 8.2 AI行为树
