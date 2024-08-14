@@ -78,7 +78,7 @@
   - 
 - chapter12 ECS系统——artemis
 
-  - 12.1 world初始化流程
+  - 12.1 [world初始化流程](chaper12%2Fworld%B3%F5%CA%BC%BB%AF%C1%F7%B3%CC.md)
 
 - [chapter12] box2dlights（光与影）
 
