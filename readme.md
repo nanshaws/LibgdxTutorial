@@ -81,7 +81,7 @@
   - 12.2 [world初始化流程](chaper12%2Fworld%B3%F5%CA%BC%BB%AF%C1%F7%B3%CC.md)
   - 12.3 Artemis 中的ioc例子
   - 
-- [chapter12] box2dlights（光与影）
+- [chapter13] box2dlights（光与影）
 
     
 
