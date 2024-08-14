@@ -49,7 +49,7 @@
   - 7.2 WebSocket通信
   - 7.3 UDP通信
 
-- [chapter8](chapter8%2Fchapter8.md)（我把官网的gdx-ai和ashley框架的tests示例代码完整运行成功后带出来了，供大家学习）
+- [chapter8](chapter8%2Fchapter8.md) ECS系统——ashley
 
   - 8.1 路径寻路
   - 8.2 AI行为树
@@ -75,7 +75,12 @@
 - [chapter11](chapter11%2Fchapter11.md) 文件保存（保存游戏）
 
   - 11.1 游戏保存功能
-
+  - 
+- chapter12 ECS系统——artemis
+  - 12.1 Artemis ECS 框架入门介绍文档提纲
+  - 12.2 [world初始化流程](chaper12%2Fworld%B3%F5%CA%BC%BB%AF%C1%F7%B3%CC.md)
+  - 12.3 Artemis 中的ioc例子
+  - 
 - [chapter12] box2dlights（光与影）
 
     
