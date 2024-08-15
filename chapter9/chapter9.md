@@ -70,7 +70,7 @@ public class GLProfilerExample extends ApplicationAdapter {
 
 以下是一个简单的libGDX程序，包含了以上提到的调试技巧：
 
-```
+```java
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
