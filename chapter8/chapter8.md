@@ -10,7 +10,7 @@ implementation ‘com.badlogicgames.gdx:gdx-ai:1.8.2’
 
 示例 Java 代码
 
-```
+```java
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
 import com.badlogic.gdx.ai.pfa.Graph;
@@ -115,7 +115,7 @@ public class PathFindingExample {
 
 ***我的理解***（项目LibgdxTest的wayFinding包下）：首先定义节点Node，其次画图GridGraph去实现IndexedGraph<Node>用于表示图（Graph）结构，它允许图算法（如 A* 搜索）在任意节点上进行操作。实现 `IndexedGraph` 的类需要提供图中节点的相关信息和连接关系，以便算法可以执行路径查找等操作，在然后定义一个类PathFinderExample，去实现路径查找功能，路径查找所需要的三个属性
 
-```
+```java
 private GridGraph gridGraph;
 private IndexedAStarPathFinder<Node> pathFinder;
 private Heuristic<Node> heuristic;
@@ -123,7 +123,7 @@ private Heuristic<Node> heuristic;
 
 第一个图，可以对任意一个节点进行操作的一个类，第二个A*Start路径查找的查找器，第三个启发式函数，如果是曼哈顿距离则是获得最小路径的一个因子
 
-```
+```java
 public PathFinderExample(GridGraph gridGraph) {
     this.gridGraph = gridGraph;
     this.pathFinder = new IndexedAStarPathFinder<>(gridGraph);
@@ -143,7 +143,7 @@ public GraphPath<Node> findPath(Node startNode, Node endNode) {
 
 返回的path应该就是最佳路径的新图，之后，咱们就可以用个for循环去取出node节点即可
 
-```
+```java
 for (Node node : path) {
     shapeRenderer.rect(node.x * CELL_SIZE, node.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
@@ -169,7 +169,7 @@ for (Node node : path) {
 
 确保你已经将 gdx-ai 库添加到你的项目中。如果使用 Maven，可以在 `pom.xml` 中添加如下依赖：
 
-```
+```xml
  <dependency>
     <groupId>com.badlogicgames.gdx</groupId>
     <artifactId>gdx-ai</artifactId>
@@ -181,7 +181,7 @@ for (Node node : path) {
 
 下面是完整的示例代码：
 
-```
+```java
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
@@ -239,7 +239,7 @@ public class BehaviorTreeExample {
 
 `Character` 类是我们模拟的游戏角色，拥有一个简单的方法 `sayHello`，用于输出打招呼信息。
 
-```
+```java
 class Character {
     public void sayHello() {
         System.out.println(“Hello! I am a character in this game.”);
@@ -253,7 +253,7 @@ class Character {
 
 `PrintHelloTask` 是一个自定义的任务，继承自 `LeafTask<Character>`。它的主要逻辑是调用角色的 `sayHello` 方法。
 
-```
+```java
 class PrintHelloTask extends LeafTask<Character> {
     @Override
     public Status execute() {
@@ -275,7 +275,7 @@ class PrintHelloTask extends LeafTask<Character> {
 
 在 `BehaviorTreeExample` 中，我们创建了一个角色实例，以及一个行为树实例，随后运行一个简单的循环来执行行为树的逻辑。
 
-```
+```java
 public class BehaviorTreeExample {
     public static void main(String[] args) {
         Character character = new Character();
@@ -302,7 +302,7 @@ public class BehaviorTreeExample {
 
 在 `createBehaviorTreeStructure` 方法中，我们定义了行为树的结构。使用 `Sequence` 节点作为根节点，添加一个 `Repeat` 装饰器来控制 `PrintHelloTask` 的执行次数为 1 次。
 
-```
+```java
 private static Task<Character> createBehaviorTreeStructure() {
     Sequence<Character> rootSequence = new Sequence<>();
     rootSequence.addChild(new Repeat<>(new ConstantIntegerDistribution(1), new PrintHelloTask()));
@@ -325,7 +325,7 @@ LibGDX 的 gdx-ai 库支持有限状态机（Finite State Machine, FSM）来管�
 
 确保你已经将 gdx-ai 库添加到你的项目中。如果使用 Maven，可以在 `pom.xml` 中添加如下依赖：
 
-```
+```xml
 <dependency>
     <groupId>com.badlogicgames.gdx</groupId>
     <artifactId>gdx-ai</artifactId>
@@ -337,7 +337,7 @@ LibGDX 的 gdx-ai 库支持有限状态机（Finite State Machine, FSM）来管�
 
 以下是一个完整的实现状态机的 Java 示例代码：
 
-```
+```java
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
@@ -470,7 +470,7 @@ public class StateMachineExample {
 
 **完整代码：**
 
-```
+```java
 package com.mygdx.game.steering;
 
 import com.badlogic.gdx.ai.steer.Steerable;
@@ -662,7 +662,7 @@ public class SteeringActor extends Sprite implements Steerable<Vector2>
 
  成员变量
 
-```
+```java
 private Vector2 position;
 private Vector2 linearVelocity;
 private float angularVelocity;
@@ -691,7 +691,7 @@ private SteeringAcceleration<Vector2> steeringOutput;
 
 构造方法
 
-```
+```java
 public SteeringActor(Texture texture)
 public SteeringActor(Texture texture, Vector2 initialPosition)
 ```
@@ -704,7 +704,7 @@ public SteeringActor(Texture texture, Vector2 initialPosition)
 
 `setSteeringBehavior`
 
-```
+```java
 public void setSteeringBehavior(SteeringBehavior<Vector2> steeringBehavior)
 ```
 
@@ -714,7 +714,7 @@ public void setSteeringBehavior(SteeringBehavior<Vector2> steeringBehavior)
 
 `applySteering`
 
-```
+```java
 public void applySteering(float deltaTime)
 ```
 
@@ -763,7 +763,7 @@ Steerable 接口实现
 
 **完整代码：**
 
-```
+```java
 package com.mygdx.game.steering;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -846,7 +846,7 @@ public class SteeringBehaviorExample extends ApplicationAdapter {
 
 类定义和成员变量
 
-```
+```java
 public class SteeringBehaviorExample extends ApplicationAdapter {
     private static final float MAX_FORCE = 1f;
     private static final float MAX_VELOCITY = 100f;
@@ -872,7 +872,7 @@ public class SteeringBehaviorExample extends ApplicationAdapter {
 
  create() 方法
 
-```
+```java
 @Override
 public void create() {
     batch = new SpriteBatch();
@@ -911,7 +911,7 @@ public void create() {
 
  render() 方法
 
-```
+```java
 @Override
 public void render() {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -934,7 +934,7 @@ public void render() {
 
 resize() 方法
 
-```
+```java
 @Override
 public void resize(int width, int height) {
     viewport.update(width, height);
@@ -947,7 +947,7 @@ public void resize(int width, int height) {
 
 dispose() 方法
 
-```
+```java
 @Override
 public void dispose() {
     batch.dispose();
@@ -977,7 +977,7 @@ public void dispose() {
 
 首先，你需要定义消息的类型。在游戏中，消息通常用枚举类型来表示。
 
-```
+```java
 public enum MessageType {
     ATTACK,
     DEFEND,
@@ -989,7 +989,7 @@ public enum MessageType {
 
 接下来，设置消息监听器（一个可以接收消息的组件）和消息派发器（负责发送消息的对象）。
 
-```
+```java
 import com.badlogic.gdx.ai.msg.*;
 
 public class AIEntity implements Telegraph {
@@ -1084,7 +1084,7 @@ public class AIDemo {
 
 示例代码
 
-```
+```java
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
