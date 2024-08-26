@@ -312,3 +312,32 @@ public class Box2DLightsExample extends ApplicationAdapter {
 
 可以看到光和影
 
+## 当然我们可以加入以下代码，实现物体的移动的光影效果
+
+```
+ private void handleMove() {
+        float force = 10f;
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)||Gdx.input.isKeyPressed(Input.Keys.A)) {
+            body.applyForceToCenter(-force, 0, true);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)||Gdx.input.isKeyPressed(Input.Keys.D)) {
+            body.applyForceToCenter(force, 0, true);
+        }
+
+    }
+```
+
+![image-20240826142127591](./../img/image-20240826142127591.png)
+
+## **光线绑定到物体上**
+
+将项目代码改成以下格式：
+
+```
+        PointLight pointLight = new PointLight(rayHandler, 128, new Color(1, 1, 1, 1), 35, 6, 5);
+        pointLight.attachToBody(body);
+```
+
+![image-20240826142616825](./../img/image-20240826142616825.png)
+
+可以看出已经将光源绑定到小方块上了
