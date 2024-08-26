@@ -2,6 +2,8 @@
 
 `box2dLights` 是一个用于在 2D 游戏中实现动态光照效果的 Java 库，它与 Box2D 物理引擎结合使用，以便在游戏中创建复杂的光照和阴影效果
 
+完整项目在本项目目录下的Chapter13文件夹
+
 # 第一步：引入依赖
 
 注意要先引入box2d
@@ -189,4 +191,124 @@ rayHandler.setAmbientLight(0f, 1f, 0f, 0.5f);
 
 \- **`setActive(boolean active)`**
 \- 启用或禁用光源。
+
+# 光与影
+
+项目代码演示图：
+
+![image-20240826091243508](./../img/image-20240826091243508.png)
+
+
+
+项目完整代码：
+
+```
+package com.nanshaws.lwjgl3;
+
+import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Box2D;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import box2dLight.RayHandler;
+import box2dLight.PointLight;
+
+public class Box2DLightsExample extends ApplicationAdapter {
+    private World world;
+    private Box2DDebugRenderer debugRenderer;
+    private OrthographicCamera camera;
+    private RayHandler rayHandler;
+    private Body body;
+
+    @Override
+    public void create() {
+        Box2D.init();
+        world = new World(new com.badlogic.gdx.math.Vector2(0, -9.8f), true);
+        debugRenderer = new Box2DDebugRenderer();
+
+        camera = new OrthographicCamera(32, 18); // This assumes 32x18 units camera. Adjust for your needs.
+
+        // Create a box object in the world
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyType.DynamicBody;
+        bodyDef.position.set(0, 5);
+
+        body = world.createBody(bodyDef);
+
+        PolygonShape box = new PolygonShape();
+        box.setAsBox(1, 1);
+        body.createFixture(box, 1);
+        box.dispose();
+
+        // Create the ground
+        BodyDef groundBodyDef = new BodyDef();
+        groundBodyDef.type = BodyType.StaticBody;
+        groundBodyDef.position.set(0, -1); // Set this to place the ground correctly
+
+        Body groundBody = world.createBody(groundBodyDef);
+
+        PolygonShape groundBox = new PolygonShape();
+        groundBox.setAsBox(15, 0.5f); // Width and height of the ground
+
+        groundBody.createFixture(groundBox, 0);
+        groundBox.dispose();
+
+        // Set up the ray handler
+        rayHandler = new RayHandler(world);
+        rayHandler.setAmbientLight(0.2f); // Ambient light in the scene
+        rayHandler.setCulling(true);
+        RayHandler.useDiffuseLight(true);
+
+        // Create a point light
+        new PointLight(rayHandler, 128, new Color(1, 1, 1, 1), 20, 5, 5);
+    }
+
+
+    @Override
+    public void render() {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
+        world.step(1 / 60f, 6, 2);
+
+        camera.update();
+        debugRenderer.render(world, camera.combined);
+
+        rayHandler.setCombinedMatrix(camera);
+        rayHandler.updateAndRender();
+    }
+
+    @Override
+    public void dispose() {
+        world.dispose();
+        debugRenderer.dispose();
+        rayHandler.dispose();
+    }
+
+    public static void main(String[] args) {
+        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+
+        config.setTitle("Box2DLights Example");
+        config.setWindowedMode(800,480);  // 宽度，像素
+
+        // 启动应用程序
+        new Lwjgl3Application(new Box2DLightsExample(), config);
+    }
+}
+```
+
+项目运行结果：
+
+![image-20240826091946787](./../img/image-20240826091946787.png)
+
+可以看到光和影
 
