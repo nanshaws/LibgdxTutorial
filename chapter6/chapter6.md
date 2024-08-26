@@ -352,3 +352,66 @@ public class Box2DExample extends ApplicationAdapter {
 ```
 
 ![image-20240826144339232](./../img/image-20240826144339232.png)
+
+## box2d的api介绍
+
+1. `World`（世界）
+   \- **Description**: 世界是物理引擎的核心。它管理所有的物理对象和模拟。
+   \- **Key Methods**:
+   \- `step(float timeStep, int velocityIterations, int positionIterations)`: 执行物理仿真的步骤。
+   \- `createBody(BodyDef bodyDef)`: 创建一个新的物理身体。
+   \- `destroyBody(Body body)`: 销毁指定的物理身体。
+
+2. `Body`（身体）
+   \- **Description**: 物理世界中的实体。每个身体都有位置、速度、角速度等。
+   \- **Types**: 静态（Static）、动态（Dynamic）、运动学（Kinematic）。
+   \- **Key Methods**:
+   \- `createFixture(FixtureDef fixtureDef)`: 给身体添加夹具（fixture）。
+   \- `setTransform(Vector2 position, float angle)`: 设置身体的位置和旋转。
+   \- `applyForce(Vector2 force, Vector2 point, boolean wake)`: 对身体施加一个力。
+
+3. `Fixture`（夹具）
+   \- **Description**: 附加到身体上的一个物理形状，它定义了碰撞几何和物理属性（密度、摩擦、弹性）。
+   \- **Key Methods**:
+   \- `getShape()`: 获取夹具的形状。
+   \- `setSensor(boolean sensor)`: 设置是否为传感器夹具（传感器不会产生碰撞响应）。
+
+4. `Shape`（形状）
+   \- **Types**: `CircleShape`（圆形）、`PolygonShape`（多边形）、`EdgeShape`（边缘）、`ChainShape`（链条）。
+   \- **Key Methods**:
+   \- `setAsBox(float hx, float hy)`: 为多边形形状设置一个盒子形状。
+   \- 各形状有特定的方法用来定义它们的几何属性。
+
+5. `BodyDef`（身体定义）
+   \- **Description**: 用于定义身体的属性。
+   \- **Key Properties**:
+   \- `type`: `BodyType`（静态、动态、运动学）
+   \- `position`: 初始位置
+   \- `angle`: 初始角度
+
+6. `FixtureDef`（夹具定义）
+   \- **Description**: 用于定义夹具的属性。
+   \- **Key Properties**:
+   \- `shape`: 形状对象
+   \- `density`: 密度
+   \- `friction`: 摩擦系数
+   \- `restitution`: 恢复系数
+
+7. `Joint`（关节）
+   \- **Description**: 用于连接两个或多个身体，以限制它们之间的相对运动。
+   \- **Types**: `DistanceJoint`（距离关节）、`RevoluteJoint`（旋转关节）、`PrismaticJoint`（棱柱关节）、`PulleyJoint`（滑轮关节）等。
+   \- **Key Methods**:
+   \- Joints usually have methods to set limits or motors depending on the type.
+
+8. `ContactListener`（碰撞监听器）
+   \- **Description**: 用于处理接触事件的接口。
+   \- **Key Methods**:
+   \- `beginContact(Contact contact)`: 当两个夹具开始接触时调用。
+   \- `endContact(Contact contact)`: 当两个夹具结束接触时调用。
+   \- `preSolve(Contact contact, Manifold oldManifold)`: 在接触求解之前调用。
+   \- `postSolve(Contact contact, ContactImpulse impulse)`: 在接触求解之后调用。
+
+9. `RayCastCallback`（光线投射回调）
+   \- **Description**: 用于处理光线投射结果的接口。
+   \- **Key Methods**:
+   \- `reportFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction)`: 在光线与夹具接触时调用
