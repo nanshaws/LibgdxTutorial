@@ -84,6 +84,8 @@
 - [chapter13](chapter13%2Fchapter13.md) box2dlights（光与影）
 
     
+- [chapter14](chapter14%2Fchapter14.md) libgdx3d
+  
 
 ## 使用说明
 
